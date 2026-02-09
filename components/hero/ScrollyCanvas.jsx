@@ -50,33 +50,65 @@ export default function ScrollyCanvas({ numFrames }) {
 
   // Preload Images
   useEffect(() => {
-    let loadedCount = 0;
-    const loadedImages = [];
+    let isCancelled = false;
+    const loadedImages = new Array(numFrames);
 
-    const loadBatch = async () => {
-      // Load all frames
-      for (let i = 0; i < numFrames; i++) {
-        const img = new Image();
-        // Pad index to 3 digits: 000, 001...
-        const paddedIndex = i.toString().padStart(3, "0");
-        img.src = `/sequence/frame_${paddedIndex}.webp`;
+    const loadAllImages = async () => {
+      // 1. Load First Frame with High Priority
+      const firstImg = new Image();
+      firstImg.src = "/sequence/frame_000.webp";
 
-        await new Promise((resolve) => {
-          img.onload = () => {
-            loadedCount++;
-            resolve(true);
-          };
-          img.onerror = () => resolve(false); // Skip error but continue
-        });
-        loadedImages[i] = img;
-      }
-      setImages(loadedImages);
-      setIsLoaded(true);
-      // Initial render
+      await new Promise((resolve) => {
+        firstImg.onload = resolve;
+        firstImg.onerror = resolve;
+      });
+
+      if (isCancelled) return;
+
+      loadedImages[0] = firstImg;
+      setImages([...loadedImages]);
+      setIsLoaded(true); // Allow rendering as soon as the first frame is ready
+
+      // Initial render for frame 0
       requestAnimationFrame(() => renderFrame(0));
+
+      // 2. Load the rest in parallel batches to avoid overwhelming the browser
+      const remainingIndices = Array.from(
+        { length: numFrames - 1 },
+        (_, i) => i + 1,
+      );
+
+      // Load in concurrent batches of 20
+      const batchSize = 20;
+      for (let i = 0; i < remainingIndices.length; i += batchSize) {
+        const batch = remainingIndices.slice(i, i + batchSize);
+        await Promise.all(
+          batch.map((index) => {
+            return new Promise((resolve) => {
+              const img = new Image();
+              const paddedIndex = index.toString().padStart(3, "0");
+              img.src = `/sequence/frame_${paddedIndex}.webp`;
+              img.onload = () => {
+                loadedImages[index] = img;
+                resolve();
+              };
+              img.onerror = resolve;
+            });
+          }),
+        );
+
+        if (isCancelled) return;
+
+        // Update images state periodically to allow scrolling mid-load
+        setImages([...loadedImages]);
+      }
     };
 
-    loadBatch();
+    loadAllImages();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [numFrames]);
 
   // Resize Handler

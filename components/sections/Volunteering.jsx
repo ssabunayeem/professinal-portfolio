@@ -39,7 +39,7 @@ export default function Volunteering() {
               key={i}
               className="glass-card p-6 border-t-2 border-t-secondary/30 hover:border-secondary/50 hover:bg-secondary/5 hover:scale-[1.02] transition-all duration-500 flex flex-col items-center text-center group"
             >
-              <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-full bg-secondary/10 flex ietems-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <span className="text-secondary font-bold text-xl">V</span>
               </div>
               <span className="text-[10px] font-mono text-muted uppercase tracking-widest mb-2">
