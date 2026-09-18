@@ -3,7 +3,28 @@ import SectionTitle from "../ui/SectionTitle";
 
 const experiences = [
   {
-    role: "Contract / Part-Time Developer & IT Support",
+    role: "Full Stack Developer & Project Coordinator",
+    company: "Infolect Group (IG)",
+    period: "Mar 2026 – Present",
+    points: [
+      "Lead the development of full-stack web applications using MERN stack",
+      "Coordinate cross-functional teams to ensure on-time delivery of web solutions",
+      "Manage and oversee project timelines, stakeholder communications, and deliverables",
+      "Optimize UI/UX by collaborating with design teams to ensure responsive and modern layouts",
+      "Spearhead process improvements by integrating agile methodologies in project execution",
+      "Directly coordinate with the Chairman to monitor planning, execution, and delivery of various projects, overseeing Engineering and Digital Marketing teams"
+    ],
+    links: [
+      { name: "Infolect Group", url: "https://infolectgroup.com/" },
+      { name: "ERPCap", url: "https://erpcap.com/" },
+      { name: "NextBangladesh24", url: "https://nextbangladesh24.com/" },
+      { name: "MediaClicking", url: "https://mediaclicking.com/" },
+      { name: "SKREGP", url: "https://skregp.com/" },
+      { name: "ShokherMela", url: "https://shokhermela.com/" }
+    ]
+  },
+  {
+    role: "Frontend Developer & IT Consultant",
     company: "Landco Solar Company Ltd & Freelance Projects",
     period: "Jan 2025 – Dec 2025",
     points: [
@@ -11,6 +32,9 @@ const experiences = [
       "Delivered freelance projects independently, ensuring usability and performance",
       "Provided IT support, including system troubleshooting and basic network issues",
     ],
+    links: [
+      { name: "Landco Solar", url: "https://landcosolar.com/" }
+    ]
   },
   {
     role: "Python Programming Trainer",
@@ -21,6 +45,9 @@ const experiences = [
       "Explained core programming concepts through hands-on examples and exercises",
       "Evaluated student progress and provided constructive technical feedback",
     ],
+    links: [
+      { name: "Digital Content", url: "https://digitalcontent.gov.bd/" }
+    ]
   },
   {
     role: "Information Technology Executive",
@@ -32,6 +59,10 @@ const experiences = [
       "Assisted with system updates, routine maintenance, and basic network troubleshooting.",
       "Developed a strong foundation in IT support, problem-solving, and professional workplace practices.",
     ],
+    links: [
+      { name: "BD Tech Services", url: "http://www.bdtechservices.com/" },
+      { name: "Facebook", url: "https://www.facebook.com/btsbdcom/" }
+    ]
   },
   {
     role: "IT Assistant",
@@ -42,6 +73,9 @@ const experiences = [
       "Provided timely technical support for hardware and software issues affecting students and faculty.",
       "Assisted with system updates, routine maintenance, and basic network troubleshooting tasks.",
     ],
+    links: [
+      { name: "AIUB", url: "https://www.aiub.edu/" }
+    ]
   },
 ];
 
@@ -88,7 +122,7 @@ export default function Experience() {
                     <p className="text-lg text-muted/80 mb-4">{exp.company}</p>
 
                     {exp.points.length > 0 && (
-                      <ul className="space-y-2 text-muted/70 text-sm md:text-base inline-block text-left">
+                      <ul className="space-y-2 text-muted/70 text-sm md:text-base inline-block text-left mb-4">
                         {exp.points.map((point, pIdx) => (
                           <li
                             key={pIdx}
@@ -99,6 +133,22 @@ export default function Experience() {
                           </li>
                         ))}
                       </ul>
+                    )}
+
+                    {exp.links && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {exp.links.map((link, lIdx) => (
+                          <a
+                            key={lIdx}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[10px] sm:text-xs font-mono text-primary bg-primary/5 hover:bg-primary/20 border border-primary/20 px-2 py-1 rounded transition-colors flex items-center gap-1"
+                          >
+                            {link.name} <span className="text-[8px]">↗</span>
+                          </a>
+                        ))}
+                      </div>
                     )}
                   </div>
                 </div>
