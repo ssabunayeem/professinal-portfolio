@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaHome,
@@ -10,7 +10,7 @@ import {
   FaChalkboardTeacher,
   FaTools,
   FaProjectDiagram,
-  FaHandHoldingHeart,
+  FaHeart,
   FaEnvelope,
   FaGithub,
   FaLinkedin,
@@ -20,12 +20,12 @@ import {
 const navItems = [
   { icon: FaHome, label: "Home", href: "#home" },
   { icon: FaUser, label: "About", href: "#about" },
-  { icon: FaTools, label: "Skills", href: "#skills" },
-  { icon: FaProjectDiagram, label: "Projects", href: "#projects" },
   { icon: FaBriefcase, label: "Experience", href: "#experience" },
+  { icon: FaTools, label: "Skills", href: "#skills" },
   { icon: FaGraduationCap, label: "Education", href: "#education" },
   { icon: FaChalkboardTeacher, label: "Training", href: "#training" },
-  { icon: FaHandHoldingHeart, label: "Volunteering", href: "#volunteering" },
+  { icon: FaProjectDiagram, label: "Projects", href: "#projects" },
+  { icon: FaHeart, label: "Volunteering", href: "#volunteering" },
   {
     icon: FaFileAlt,
     label: "Resume",
@@ -38,6 +38,69 @@ const navItems = [
 const Sidebar = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [activeItem, setActiveItem] = useState("#home");
+
+  // Scroll spy effect - auto-update active link based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navItems
+        .filter((item) => !item.isExternal)
+        .map((item) => ({
+          id: item.href,
+          element: document.getElementById(item.href.replace("#", "")),
+        }))
+        .filter((section) => section.element !== null);
+
+      // Get current scroll position with a smaller offset to fix "one step ahead" issue
+      const scrollPosition = window.scrollY + 150;
+
+      // Find the current section
+      let currentSection = "#home";
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section.element) {
+          // specific handling for home to ensure it is selected when at the very top
+          if (section.id === "#home" && window.scrollY < 100) {
+            currentSection = "#home";
+            break;
+          }
+
+          // Use getBoundingClientRect to get absolute position relative to viewport + scrollY
+          // This fixes the issue where offsetTop is relative to a positioned parent
+          const rect = section.element.getBoundingClientRect();
+          const offsetTop = rect.top + window.scrollY;
+
+          if (scrollPosition >= offsetTop) {
+            currentSection = section.id;
+            break;
+          }
+        }
+      }
+
+      setActiveItem(currentSection);
+    };
+
+    // Initial check
+    handleScroll();
+
+    // Add scroll listener with throttling
+    let ticking = false;
+    const scrollListener = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", scrollListener, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", scrollListener);
+    };
+  }, []);
 
   const handleScroll = (e, item) => {
     if (item.isExternal) return;
@@ -63,17 +126,29 @@ const Sidebar = () => {
       {/* Desktop Sidebar (Left) */}
       <motion.div
         initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1, width: isHovered ? 260 : 80 }}
+        animate={{
+          x: 0,
+          opacity: 1,
+          width: isHovered
+            ? typeof window !== "undefined" && window.innerWidth >= 1024
+              ? 260
+              : 220
+            : typeof window !== "undefined" && window.innerWidth >= 1024
+              ? 80
+              : 70,
+        }}
         transition={{ type: "spring", stiffness: 400, damping: 35 }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="hidden md:flex fixed left-0 top-0 h-screen flex-col items-center py-8 bg-black/10 hover:bg-black/20 backdrop-blur-xl border-r border-primary/20 shadow-xl z-50 overflow-hidden border-neon-primary"
+        className="hidden md:flex fixed left-0 top-0 h-screen flex-col items-center py-6 md:py-8 bg-black/10 hover:bg-black/20 backdrop-blur-xl border-r border-primary/20 shadow-xl z-50 overflow-hidden border-neon-primary max-w-[90vw]"
       >
         {/* Top: Logo/System Status */}
-        <div className="w-full flex items-center justify-center mb-10 px-4 h-12">
+        <div className="w-full flex items-center justify-center mb-6 md:mb-10 px-3 md:px-4 h-10 md:h-12">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 min-w-[40px] rounded-xl border border-primary/20 flex items-center justify-center bg-primary/10">
-              <span className="font-bold text-primary text-lg">N</span>
+            <div className="w-8 h-8 md:w-10 md:h-10 min-w-[32px] md:min-w-[40px] rounded-lg md:rounded-xl border border-primary/20 flex items-center justify-center bg-primary/10">
+              <span className="font-bold text-primary text-base md:text-lg">
+                N
+              </span>
             </div>
             {/* Logo Text (Animated) */}
             <AnimatePresence>
@@ -84,10 +159,10 @@ const Sidebar = () => {
                   exit={{ opacity: 0, x: -10 }}
                   className="whitespace-nowrap overflow-hidden"
                 >
-                  <h1 className="font-bold text-foreground text-lg tracking-wider">
+                  <h1 className="font-bold text-foreground text-base md:text-lg tracking-wider">
                     NAYEEM<span className="text-primary">.</span>
                   </h1>
-                  <p className="text-[10px] text-muted font-mono tracking-widest">
+                  <p className="text-[9px] md:text-[10px] text-muted font-mono tracking-widest">
                     SYSTEM_ONLINE
                   </p>
                 </motion.div>
@@ -97,7 +172,7 @@ const Sidebar = () => {
         </div>
 
         {/* Center: Navigation Items */}
-        <nav className="flex-1 w-full px-4 flex flex-col gap-2 overflow-y-auto overflow-x-hidden scrollbar-none">
+        <nav className="flex-1 w-full px-3 md:px-4 flex flex-col gap-1.5 md:gap-2 overflow-y-auto overflow-x-hidden scrollbar-none">
           {navItems.map((item, index) => {
             const isActive = activeItem === item.href;
             return (
@@ -107,7 +182,7 @@ const Sidebar = () => {
                 target={item.isExternal ? "_blank" : undefined}
                 rel={item.isExternal ? "noopener noreferrer" : undefined}
                 onClick={(e) => handleScroll(e, item)}
-                className={`relative group w-full flex items-center gap-4 p-3 rounded-lg transition-all duration-300 ${
+                className={`relative group w-full flex items-center gap-3 md:gap-4 p-2.5 md:p-3 rounded-lg transition-all duration-300 ${
                   isActive
                     ? "bg-primary/10 border border-primary/30 shadow-[0_0_10px_rgba(139,92,246,0.1)]"
                     : "hover:bg-white/5 border border-transparent hover:border-white/5"
@@ -122,10 +197,10 @@ const Sidebar = () => {
                 )}
 
                 {/* Icon */}
-                <div className="min-w-[24px] flex justify-center">
+                <div className="min-w-[20px] md:min-w-[24px] flex justify-center">
                   <item.icon
-                    size={18}
-                    className={`transition-all duration-300 ${
+                    size={16}
+                    className={`md:w-[18px] md:h-[18px] transition-all duration-300 ${
                       isActive
                         ? "text-primary glow-primary scale-110"
                         : "text-muted group-hover:text-foreground group-hover:glow-primary"
@@ -141,7 +216,7 @@ const Sidebar = () => {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
                       transition={{ duration: 0.2 }}
-                      className={`whitespace-nowrap text-sm font-medium tracking-wide ${
+                      className={`whitespace-nowrap text-xs md:text-sm font-medium tracking-wide ${
                         isActive
                           ? "text-foreground font-semibold"
                           : "text-muted group-hover:text-foreground"
@@ -157,15 +232,15 @@ const Sidebar = () => {
         </nav>
 
         {/* Bottom: Social/Connect */}
-        <div className="w-full px-4 mt-4">
-          <div className="w-full p-4 rounded-xl border border-white/5 flex flex-col items-center gap-3 overflow-hidden relative group bg-black/20">
+        <div className="w-full px-3 md:px-4 mt-3 md:mt-4">
+          <div className="w-full p-3 md:p-4 rounded-lg md:rounded-xl border border-white/5 flex flex-col items-center gap-2 md:gap-3 overflow-hidden relative group bg-black/20">
             <AnimatePresence mode="wait">
               {!isHovered ? (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex flex-col gap-4 items-center relative z-10"
+                  className="flex flex-col gap-3 md:gap-4 items-center relative z-10"
                 >
                   <a
                     href="https://github.com/ssabunayeem"
@@ -173,7 +248,7 @@ const Sidebar = () => {
                     rel="noreferrer"
                     className="text-muted hover:text-foreground transition-colors"
                   >
-                    <FaGithub size={18} />
+                    <FaGithub size={16} className="md:w-[18px] md:h-[18px]" />
                   </a>
                   <a
                     href="https://linkedin.com/in/ssabunayeem"
@@ -181,7 +256,7 @@ const Sidebar = () => {
                     rel="noreferrer"
                     className="text-muted hover:text-primary transition-colors"
                   >
-                    <FaLinkedin size={18} />
+                    <FaLinkedin size={16} className="md:w-[18px] md:h-[18px]" />
                   </a>
                 </motion.div>
               ) : (
@@ -191,7 +266,7 @@ const Sidebar = () => {
                   exit={{ opacity: 0 }}
                   className="w-full flex flex-col gap-2 relative z-10"
                 >
-                  <p className="text-[10px] text-muted uppercase font-mono tracking-wider text-center mb-1">
+                  <p className="text-[9px] md:text-[10px] text-muted uppercase font-mono tracking-wider text-center mb-1">
                     Connect
                   </p>
                   <div className="flex justify-evenly w-full">
@@ -201,7 +276,7 @@ const Sidebar = () => {
                       rel="noreferrer"
                       className="p-2 rounded bg-white/5 hover:bg-primary/10 text-muted hover:text-primary transition-all"
                     >
-                      <FaGithub size={18} />
+                      <FaGithub size={16} className="md:w-[18px] md:h-[18px]" />
                     </a>
                     <a
                       href="https://linkedin.com/in/ssabunayeem"
@@ -209,7 +284,10 @@ const Sidebar = () => {
                       rel="noreferrer"
                       className="p-2 rounded bg-white/5 hover:bg-primary/10 text-muted hover:text-primary transition-all"
                     >
-                      <FaLinkedin size={18} />
+                      <FaLinkedin
+                        size={16}
+                        className="md:w-[18px] md:h-[18px]"
+                      />
                     </a>
                   </div>
                 </motion.div>
@@ -224,7 +302,7 @@ const Sidebar = () => {
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
-        className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-black/10 hover:bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl shadow-2xl z-50 px-6 py-4 transition-all duration-500 border-neon-primary"
+        className="md:hidden fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[95%] sm:w-[90%] max-w-sm bg-black/10 hover:bg-black/20 backdrop-blur-md border border-primary/20 rounded-xl sm:rounded-2xl shadow-2xl z-50 px-4 sm:px-6 py-3 sm:py-4 transition-all duration-500 border-neon-primary"
       >
         <div className="flex justify-between items-center">
           {navItems
@@ -237,17 +315,17 @@ const Sidebar = () => {
                   key={index}
                   href={item.href}
                   onClick={(e) => handleScroll(e, item)}
-                  className="flex flex-col items-center gap-1 group relative"
+                  className="flex flex-col items-center gap-0.5 sm:gap-1 group relative"
                 >
                   {isActive && (
-                    <div className="absolute -top-4 w-8 h-1 bg-primary rounded-b-full" />
+                    <div className="absolute -top-3 sm:-top-4 w-6 sm:w-8 h-0.5 sm:h-1 bg-primary rounded-b-full" />
                   )}
                   <div
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-1.5 sm:p-2 rounded-lg transition-colors ${
                       isActive ? "bg-primary/20 text-primary" : "text-muted"
                     }`}
                   >
-                    <item.icon size={20} />
+                    <item.icon size={18} className="sm:w-5 sm:h-5" />
                   </div>
                 </a>
               );

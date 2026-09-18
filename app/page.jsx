@@ -46,11 +46,11 @@ export default function Home() {
         {/* Sections Content - transparent backgrounds where needed */}
         <div className="relative z-10 flex flex-col">
           <About />
-          <Skills />
-          <Projects />
           <Experience />
+          <Skills />
           <Education />
           <Training />
+          <Projects />
           <Volunteering />
           <Contact />
           <Footer />

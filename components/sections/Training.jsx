@@ -5,7 +5,7 @@ const trainings = [
   // ... (trainings data unchanged)
   {
     title: "Web Development Course (MERN Stack)",
-    org: "Programming Hero (Ongoing)",
+    org: "Programming Hero",
     period: "Jun 2025 – Jan 2026",
     location: "Dhaka, Bangladesh",
   },

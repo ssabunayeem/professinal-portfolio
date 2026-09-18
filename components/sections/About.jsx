@@ -23,7 +23,7 @@ export default function About() {
           </p>
           <p>
             With over <span className="text-primary font-bold">4 years</span> of
-            industry experience, I specialize in delivering mission-critical
+            IT experience, I specialize in delivering mission-critical
             solutions and production-hardened code. I prioritize
             maintainability, performance, and architectural integrity in every
             project.

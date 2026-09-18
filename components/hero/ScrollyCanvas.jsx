@@ -10,8 +10,13 @@ export default function ScrollyCanvas({ numFrames }) {
 
   const { scrollY } = useScroll();
 
-  // Map 0 -> 3000px (approx 3-4 screens) to 0 -> numFrames - 1
-  const currentIndex = useTransform(scrollY, [0, 3000], [0, numFrames - 1]);
+  // Map scroll to frame index - adjusted for 300vh height on all devices
+  // 300vh ≈ 3x viewport height, map to full frame range
+  const currentIndex = useTransform(
+    scrollY,
+    [0, typeof window !== "undefined" ? window.innerHeight * 2.5 : 2500],
+    [0, numFrames - 1],
+  );
 
   const renderFrame = (index) => {
     const canvas = canvasRef.current;
