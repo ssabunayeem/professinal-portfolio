@@ -60,8 +60,7 @@ const experiences = [
       "Developed a strong foundation in IT support, problem-solving, and professional workplace practices.",
     ],
     links: [
-      { name: "BD Tech Services", url: "http://www.bdtechservices.com/" },
-      { name: "Facebook", url: "https://www.facebook.com/btsbdcom/" }
+      { name: "BD Tech Services", url: "http://www.bdtechservices.com/" }
     ]
   },
   {
